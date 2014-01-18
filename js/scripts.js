@@ -70,28 +70,28 @@ $(window).ready(function($) {
 
 });
 
-/*
+
 $("canvas")
 .mousedown(function(e) {
-    var lineStart = new Line();
-    lineStart.startX = e.pageX;
-    lineStart.startY = e.pageY;
+    DivineDraw.startX = e.offsetX;
+    DivineDraw.startY = e.offsetY;
 })
 .mouseup(function(e) {
-    var lineEnd = new Line();
-    lineEnd.endX = e.pageX;
-    lineEnd.endY = e.pageY;
-    drawLine(lineStart, lineEnd);
+    DivineDraw.endX = e.offsetX;
+    DivineDraw.endY = e.offsetY;
+    drawLine();
 })
 
-function drawLine(lineStart, lineEnd) {
+function drawLine() {
     var c=document.getElementById("surface");
     var ctx=c.getContext("2d");
-    ctx.moveTo(lineStart.startX, lineStart.startY);
-    ctx.lineTo(lineEnd.endX, lineEnd.endY);
+    var yfactor = 2.9;
+    var xfactor = 2.16;
+    ctx.moveTo(DivineDraw.startX / xfactor, DivineDraw.startY / yfactor);
+    ctx.lineTo(DivineDraw.endX / xfactor, DivineDraw.endY / yfactor);
     ctx.stroke();
 }
-
+/*
 function Line() {
     
 }
