@@ -1,7 +1,7 @@
 /*globals Base*/
 /*jslint indent: 4 */
 var Shape = Base.extend({
-    "use strict";
+
     constructor: function(id, left, top, width, height) {
         this.id = id;
         this.left = left;
