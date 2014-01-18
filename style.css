@@ -1,0 +1,24 @@
+html, body {
+    width:100%;
+    height:100%;
+}
+
+section#editor {
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+aside#toolbar {
+    position:absolute;
+    left:30px;
+    top:30px;
+    padding:10px;
+    border:1px solid grey;
+    margin:10px;
+}
+
+canvas#surface {
+    width:100%;
+    height:100%;
+}
