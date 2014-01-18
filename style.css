@@ -16,6 +16,11 @@ aside#toolbar {
     padding:10px;
     border:1px solid grey;
     margin:10px;
+    cursor:move;
+}
+
+aside#toolbar {
+    font-size: 2em;
 }
 
 canvas#surface {
