@@ -21,4 +21,11 @@ aside#toolbar {
 canvas#surface {
     width:100%;
     height:100%;
+    border:10px solid grey;
+}
+
+canvas#border {
+
+
+
 }
