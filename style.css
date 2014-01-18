@@ -18,6 +18,10 @@ aside#toolbar {
     margin:10px;
 }
 
+aside#toolbar {
+    font-size: 2em;
+}
+
 canvas#surface {
     width:100%;
     height:100%;
