@@ -12,20 +12,39 @@ section#editor {
 aside#toolbar {
     position:absolute;
     text-align: center;
+    vertical-align: middle;
+    font-size: 10px;
     left:30px;
     bottom:30px;
-    padding:10px;
+    padding:0 10px 10px;
     border:1px solid grey;
     border-radius: 5px;
     margin:10px;
+}
+
+aside#toolbar hr.handle {
     cursor:move;
+    margin: 5px 0;
+    border: 4px solid black;
+    border-radius: 3px;
 }
 
 aside#toolbar .btn {
     font-size: 24px;
-    padding: 0 6px;
+    line-height: 24px;
+    padding: 2px;
+}
+
+aside#toolbar span.separator {
+    font-size: 28px;
+    line-height: 28px;
+    vertical-align: middle;
 }
 
 aside#toolbar hr {
     margin: 5px 0;
+}
+
+canvas#surface {
+    display: block;
 }

@@ -19,17 +19,21 @@
 <body>
     <section id="editor">
         <aside id="toolbar">
+            <hr class="handle" />
             <!-- Icons from typicons.com -->
-            <button class="btn" accesskey="n" id="new" title="Ný teikning"><span class="typcn typcn-document"></span></button>
-            <button class="btn" accesskey="l" id="load" title="Hlaða teikningu"><span class="typcn typcn-download"></span></button>
-            <button class="btn" accesskey="s" id="save" title="Vista teikningu"><span class="typcn typcn-upload"></span></button>
-            <hr />
-            <button class="btn" accesskey="m" id="move" title="Færa"><span class="typcn typcn-arrow-move"></span></button>
-            <button class="btn" accesskey="f" id="freehand" title="Teikna"><span class="typcn typcn-pencil"></span></button>
-            <button class="btn" accesskey="r" id="rectangle" title="Ferhyrningur"><span class="typcn typcn-media-stop"></span></button>
-            <button class="btn" accesskey="c" id="circle" title="Hringur"><span class="typcn typcn-media-record"></span></button>
-            <button class="btn" accesskey="i" id="line" title="Lína"><span class="typcn typcn-minus"></span></button>
-            <button class="btn" accesskey="t" id="text" title="Texti"><span class="typcn typcn-sort-alphabetically"></span></button>
+            <button class="btn command" accesskey="n" id="new" title="Ný teikning"><span class="typcn typcn-document"></span></button>
+            <button class="btn command" accesskey="l" id="load" title="Hlaða teikningu"><span class="typcn typcn-download-outline"></span></button>
+            <button class="btn command" accesskey="s" id="save" title="Vista teikningu"><span class="typcn typcn-upload-outline"></span></button>
+            <span class="separator">&nbsp;|&nbsp;</span>
+            <button class="btn tool btn-success" accesskey="m" id="move" title="Færa"><span class="typcn typcn-arrow-move"></span></button>
+            <button class="btn tool" accesskey="f" id="freehand" title="Teikna"><span class="typcn typcn-pencil"></span></button>
+            <button class="btn tool" accesskey="r" id="rectangle" title="Ferhyrningur"><span class="typcn typcn-media-stop"></span></button>
+            <button class="btn tool" accesskey="c" id="circle" title="Hringur"><span class="typcn typcn-media-record"></span></button>
+            <button class="btn tool" accesskey="i" id="line" title="Lína"><span class="typcn typcn-minus"></span></button>
+            <button class="btn tool" accesskey="t" id="text" title="Texti"><span class="typcn typcn-sort-alphabetically"></span></button>
+            <span class="separator">&nbsp;|&nbsp;</span>
+            <button class="btn action" accesskey="u" id="undo" title="Hætta við" disabled><span class="typcn typcn-arrow-back-outline"></span></button>
+            <button class="btn action" accesskey="e" id="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
             <hr />
             <label for="foreground">Litur:</label>
             <input id="foreground" type="color" value="#000000" />
@@ -37,6 +41,17 @@
             <input id="background" type="color" value="#ff0000" />
             <label for="solid">Fyllt:</label>
             <input id="solid" type="checkbox" checked />
+            <label for="lineWidth">Lína:</label>
+            <input id="lineWidth" type="number" size="3" value="1" min="1" max="10" />
+            <label for="font">Letur:</label>
+            <select id="font">
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times</option>
+                <option value="Courier">Courier</option>
+            </select>
+            <label for="fontSize">Stærð:</label>
+            <input id="fontSize" type="number" step="4" value="8" min="8" max="36" />
+
         </aside>
         <canvas id="surface">
             <h1 class="error">Sorry, your browser sucks!!</h1>

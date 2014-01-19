@@ -1,8 +1,17 @@
 // Create a global variable to hold application with some state variables and stuff
 var dd = {
-    canvas:  null,
-    ctx:     null,
-    shapes:  []
+    
+    // Keep these around
+    canvas:      null,
+    ctx:         null,
+    shapes:      [],
+
+    // Need to know our current state
+    activeShape: null,
+    activeTool:  "move",
+
+    // And for the event handlers to know what is happening
+    dragState:   ""
 };
 
 $(window).ready(function($) {
@@ -21,17 +30,36 @@ $(window).ready(function($) {
         // TODO: Call rendering action to redraw 
     });
 
-    // Closure for toolbar container event handling
+    // Setup a closure which encapsulates all event handling
     (function() {
         var dragging = false,
-            left     = 30,
-            bottom   = 30,
-            start    = {x: 0, y: 0},
-            current  = {x: 0, y: 0},
+            original  = {x: 0, y: 0},
+            start     = {x: 0, y: 0},
+            current   = {x: 0, y: 0},
             te;
 
-        // Set up event handlers
-        $('aside#toolbar').on('mousedown touchstart', function(e) {
+        // Clicks directly to canvas
+        $("canvas#surface").on('mousedown touchstart', function(e) {
+
+            // Add a new Shape, this is useless at this point
+            dd.activeShape = new Shape(dd.ctx, {
+                left: 100,
+                top: 100,
+                width: 200,
+                height: 100
+            });
+            dd.shapes.push(dd.activeShape);
+        });
+
+        // Toolbar tool buttons
+        $('aside#toolbar button.tool').on('click', function(e) {
+            $('aside#toolbar button.tool').removeClass('btn-success');
+            $(this).addClass("btn-success");
+            dd.activeTool = $(this).attr("id");
+        });
+
+        // Handle dragging of toolbar
+        $('aside#toolbar hr.handle').on('mousedown touchstart', function(e) {
             // To stop scrolling to take over and bubbling
             e.preventDefault();
             e.stopPropagation();
@@ -45,17 +73,20 @@ $(window).ready(function($) {
                 start.y = e.clientY;
             }
 
-            // Acknowledge dragging is started
-            dragging = true;
-        
-        }).on('mousemove touchmove', function(e) {
-            // Only if actually dragging
-            if (!dragging) {
+            dd.dragState = "toolbar";
+            original.x = parseInt($('aside#toolbar').css('left'));
+            original.y = parseInt($('aside#toolbar').css('bottom'));
+
+        });
+
+        // General drag handler for all movement
+        $('section#editor').on('mousemove touchmove', function(e) {
+            // No need for action if not actually dragging
+            if (dd.dragState === "") {
                 return;
             } 
             // To stop scrolling to take over and bubbling
             e.preventDefault();
-            e.stopPropagation();
 
             if (e.type === 'touchmove') {
                 te = e.originalEvent;
@@ -66,19 +97,36 @@ $(window).ready(function($) {
                 current.y = e.clientY;
             }
 
-            // Move toolbar
-            $('aside#toolbar').css({
-                'left': left + current.x - start.x,
-                'bottom' : bottom + start.y - current.y
-            });
+            switch (dd.dragState) {
+                case "toolbar":
+                    moveToolbar(original, start, current);
+                    break;
+            }
         
+        // And handle end of drag
         }).on('mouseup mouseleave touchend touchcancel', function(e) {
-            // Need to store current position for next move
-            left = left + current.x - start.x;
-            bottom = bottom + start.y - current.y;
+            switch (dd.dragState) {
+                case "toolbar":
+                    // Need to store current position for next move
+                    original.x = original.x + current.x - start.x;
+                    original.y = original.y + start.y - current.y;
+                    break;
+            }
+            
             // And dragging has stopped
-            dragging = false;
-        });        
+            dd.dragState = "";
+        });
+
+        // Put function declarations last for better readability
+        // They will be hoisted up remember
+
+        function moveToolbar(o, s, c) {
+            $('aside#toolbar').css({
+                'left': o.x + c.x - s.x,
+                'bottom' : o.y + s.y - c.y
+            });
+        };
+
     } ());
 
 });
@@ -98,8 +146,12 @@ $("canvas")
 function drawLine() {
     var c=document.getElementById("surface");
     var ctx=c.getContext("2d");
+    ctx.beginPath();
     ctx.moveTo(dd.startX, dd.startY);
     ctx.lineTo(dd.endX, dd.endY);
+    ctx.closePath();
+
+    ctx.strokeStyle = $('input#foreground').val();
     ctx.stroke();
 }
 /*
