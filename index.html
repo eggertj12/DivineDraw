@@ -19,11 +19,24 @@
 <body>
     <section id="editor">
         <aside id="toolbar">
-            <button class="btn" accesskey="l" id="freehand"><span class="typcn typcn-pencil"><span></button>
-            <button class="btn" accesskey="l" id="freehand"><span class="typcn typcn-media-stop"><span></button>
-            <button class="btn" accesskey="l" id="freehand"><span class="typcn typcn-media-record"><span></button>
-            <button class="btn" accesskey="l" id="freehand"><span class="typcn typcn-minus"><span></button>
-            <button class="btn" accesskey="l" id="freehand"><span class="typcn typcn-sort-alphabetically"><span></button>
+            <!-- Icons from typicons.com -->
+            <button class="btn" accesskey="n" id="new" title="Ný teikning"><span class="typcn typcn-document"></span></button>
+            <button class="btn" accesskey="l" id="load" title="Hlaða teikningu"><span class="typcn typcn-download"></span></button>
+            <button class="btn" accesskey="s" id="save" title="Vista teikningu"><span class="typcn typcn-upload"></span></button>
+            <hr />
+            <button class="btn" accesskey="m" id="move" title="Færa"><span class="typcn typcn-arrow-move"></span></button>
+            <button class="btn" accesskey="f" id="freehand" title="Teikna"><span class="typcn typcn-pencil"></span></button>
+            <button class="btn" accesskey="r" id="rectangle" title="Ferhyrningur"><span class="typcn typcn-media-stop"></span></button>
+            <button class="btn" accesskey="c" id="circle" title="Hringur"><span class="typcn typcn-media-record"></span></button>
+            <button class="btn" accesskey="i" id="line" title="Lína"><span class="typcn typcn-minus"></span></button>
+            <button class="btn" accesskey="t" id="text" title="Texti"><span class="typcn typcn-sort-alphabetically"></span></button>
+            <hr />
+            <label for="foreground">Litur:</label>
+            <input id="foreground" type="color" value="#000000" />
+            <label for="background">Bakgrunnur:</label>
+            <input id="background" type="color" value="#ff0000" />
+            <label for="solid">Fyllt:</label>
+            <input id="solid" type="checkbox" checked />
         </aside>
         <canvas id="surface">
             <h1 class="error">Sorry, your browser sucks!!</h1>

@@ -1,13 +1,31 @@
-// Create a global variable to hold application
-var DivineDraw = {};
+// Create a global variable to hold application with some state variables and stuff
+var dd = {
+    canvas:  null,
+    ctx:     null,
+    shapes:  []
+};
 
 $(window).ready(function($) {
+    dd.canvas = document.getElementById('surface');
+    dd.ctx = dd.canvas.getContext("2d");
+
+    // Set canvas to fullscreen
+    dd.canvas.width = window.innerWidth;
+    dd.canvas.height = window.innerHeight;
+
+    // And make sure it stays so
+    $(window).on('resize', function() {
+        dd.canvas.width = window.innerWidth;
+        dd.canvas.height = window.innerHeight;
+
+        // TODO: Call rendering action to redraw 
+    });
 
     // Closure for toolbar container event handling
     (function() {
         var dragging = false,
             left     = 30,
-            top      = 30,
+            bottom   = 30,
             start    = {x: 0, y: 0},
             current  = {x: 0, y: 0},
             te;
@@ -29,9 +47,8 @@ $(window).ready(function($) {
 
             // Acknowledge dragging is started
             dragging = true;
-        });
         
-        $('aside#toolbar').on('mousemove touchmove', function(e) {
+        }).on('mousemove touchmove', function(e) {
             // Only if actually dragging
             if (!dragging) {
                 return;
@@ -52,14 +69,13 @@ $(window).ready(function($) {
             // Move toolbar
             $('aside#toolbar').css({
                 'left': left + current.x - start.x,
-                'top' : top + current.y - start.y
+                'bottom' : bottom + start.y - current.y
             });
-        });
-
-        $('aside#toolbar').on('mouseup mouseleave touchend touchcancel', function(e) {
+        
+        }).on('mouseup mouseleave touchend touchcancel', function(e) {
             // Need to store current position for next move
             left = left + current.x - start.x;
-            top = top + current.y - start.y;
+            bottom = bottom + start.y - current.y;
             // And dragging has stopped
             dragging = false;
         });        
@@ -70,22 +86,20 @@ $(window).ready(function($) {
 
 $("canvas")
 .mousedown(function(e) {
-    DivineDraw.startX = e.offsetX;
-    DivineDraw.startY = e.offsetY;
+    dd.startX = e.offsetX;
+    dd.startY = e.offsetY;
 })
 .mouseup(function(e) {
-    DivineDraw.endX = e.offsetX;
-    DivineDraw.endY = e.offsetY;
+    dd.endX = e.offsetX;
+    dd.endY = e.offsetY;
     drawLine();
 })
 
 function drawLine() {
     var c=document.getElementById("surface");
     var ctx=c.getContext("2d");
-    var yfactor = 2.9;
-    var xfactor = 2.16;
-    ctx.moveTo(DivineDraw.startX / xfactor, DivineDraw.startY / yfactor);
-    ctx.lineTo(DivineDraw.endX / xfactor, DivineDraw.endY / yfactor);
+    ctx.moveTo(dd.startX, dd.startY);
+    ctx.lineTo(dd.endX, dd.endY);
     ctx.stroke();
 }
 /*
