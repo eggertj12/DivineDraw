@@ -4,9 +4,7 @@ var DivineDraw = {};
 
 $(window).ready(function($) {
 
-    console.log('ready');
-    
-    // Closure for toolbar event handling
+    // Closure for toolbar container event handling
     (function() {
         var dragging = false,
             left     = 30,
@@ -17,7 +15,6 @@ $(window).ready(function($) {
 
         // Set up event handlers
         $('aside#toolbar').on('mousedown touchstart', function(e) {
-            console.log('mousedown');
             // To stop scrolling to take over and bubbling
             e.preventDefault();
             e.stopPropagation();
