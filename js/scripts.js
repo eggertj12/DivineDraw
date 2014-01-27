@@ -8,10 +8,22 @@ var dd = {
 
     // Need to know our current state
     activeShape: null,
-    activeTool:  "move",
+    activeCommand:  "createPen",
 
     // And for the event handlers to know what is happening
-    dragState:   ""
+    dragState:   "",
+
+    // A render function for drawing all those Divine things
+    render: function() {
+        var i;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var i = this.shapes.length - 1; i >= 0; i--) {
+            this.shapes[i].draw(this.ctx);
+        };
+    },
+
+    // And a reference to it for manipulating if needed
+    renderer: null
 };
 
 $(window).ready(function($) {
@@ -35,27 +47,25 @@ $(window).ready(function($) {
         var dragging = false,
             original  = {x: 0, y: 0},
             start     = {x: 0, y: 0},
-            current   = {x: 0, y: 0},
-            te;
+            current   = {x: 0, y: 0};
 
         // Clicks directly to canvas
         $("canvas#surface").on('mousedown touchstart', function(e) {
 
+            start = getEventCoordinates(e);
+
             // Add a new Shape, this is useless at this point
-            dd.activeShape = new Shape(dd.ctx, {
-                left: 100,
-                top: 100,
-                width: 200,
-                height: 100
-            });
+            dd.activeShape = dd[dd.activeCommand](start);
             dd.shapes.push(dd.activeShape);
+            //dd.activeShape.draw(dd.ctx);
+            dd.dragState = "createShape";
         });
 
         // Toolbar tool buttons
         $('aside#toolbar button.tool').on('click', function(e) {
             $('aside#toolbar button.tool').removeClass('btn-success');
             $(this).addClass("btn-success");
-            dd.activeTool = $(this).attr("id");
+            dd.activeCommand = $(this).attr("data-command");
         });
 
         // Handle dragging of toolbar
@@ -64,14 +74,7 @@ $(window).ready(function($) {
             e.preventDefault();
             e.stopPropagation();
 
-            if (e.type === 'touchstart') {
-                te = e.originalEvent;
-                start.x = te.changedTouches[0].clientX;
-                start.y = te.changedTouches[0].clientY;
-            } else {
-                start.x = e.clientX;
-                start.y = e.clientY;
-            }
+            start = getEventCoordinates(e);
 
             dd.dragState = "toolbar";
             original.x = parseInt($('aside#toolbar').css('left'));
@@ -88,18 +91,14 @@ $(window).ready(function($) {
             // To stop scrolling to take over and bubbling
             e.preventDefault();
 
-            if (e.type === 'touchmove') {
-                te = e.originalEvent;
-                current.x = te.changedTouches[0].clientX;
-                current.y = te.changedTouches[0].clientY;
-            } else {
-                current.x = e.clientX;
-                current.y = e.clientY;
-            }
+            current = getEventCoordinates(e);
 
             switch (dd.dragState) {
                 case "toolbar":
                     moveToolbar(original, start, current);
+                    break;
+                case "createShape":
+                    dd.activeShape.setEndPoint(current);
                     break;
             }
         
@@ -113,9 +112,14 @@ $(window).ready(function($) {
                     break;
             }
             
-            // And dragging has stopped
+            // Dragging has stopped
             dd.dragState = "";
         });
+
+        // Set up a timer to draw everything, 20 fps is a reasonable time, right
+        dd.renderer = setInterval(function() {
+            dd.render();
+        }, 50);
 
         // Put function declarations last for better readability
         // They will be hoisted up remember
@@ -125,7 +129,22 @@ $(window).ready(function($) {
                 'left': o.x + c.x - s.x,
                 'bottom' : o.y + s.y - c.y
             });
-        };
+        }
+
+        function getEventCoordinates(e)  {
+            var type = e.type,
+                coords = {},
+                te;
+            if (type.indexOf('touch') !== -1) {
+                te = e.originalEvent;
+                coords.x = te.changedTouches[0].clientX;
+                coords.y = te.changedTouches[0].clientY;
+            } else {
+                coords.x = e.clientX;
+                coords.y = e.clientY;
+            }
+            return coords;
+        }
 
     } ());
 

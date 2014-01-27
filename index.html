@@ -21,19 +21,19 @@
         <aside id="toolbar">
             <hr class="handle" />
             <!-- Icons from typicons.com -->
-            <button class="btn command" accesskey="n" id="new" title="Ný teikning"><span class="typcn typcn-document"></span></button>
-            <button class="btn command" accesskey="l" id="load" title="Hlaða teikningu"><span class="typcn typcn-download-outline"></span></button>
-            <button class="btn command" accesskey="s" id="save" title="Vista teikningu"><span class="typcn typcn-upload-outline"></span></button>
+            <button class="btn command" accesskey="n" data-command="new" title="Ný teikning"><span class="typcn typcn-document"></span></button>
+            <button class="btn command" accesskey="l" data-command="load" title="Hlaða teikningu"><span class="typcn typcn-download-outline"></span></button>
+            <button class="btn command" accesskey="s" data-command="save" title="Vista teikningu"><span class="typcn typcn-upload-outline"></span></button>
             <span class="separator">&nbsp;|&nbsp;</span>
-            <button class="btn tool btn-success" accesskey="m" id="move" title="Færa"><span class="typcn typcn-arrow-move"></span></button>
-            <button class="btn tool" accesskey="f" id="freehand" title="Teikna"><span class="typcn typcn-pencil"></span></button>
-            <button class="btn tool" accesskey="r" id="rectangle" title="Ferhyrningur"><span class="typcn typcn-media-stop"></span></button>
-            <button class="btn tool" accesskey="c" id="circle" title="Hringur"><span class="typcn typcn-media-record"></span></button>
-            <button class="btn tool" accesskey="i" id="line" title="Lína"><span class="typcn typcn-minus"></span></button>
-            <button class="btn tool" accesskey="t" id="text" title="Texti"><span class="typcn typcn-sort-alphabetically"></span></button>
+            <button class="btn tool" accesskey="m" data-command="moveShape" title="Færa"><span class="typcn typcn-arrow-move"></span></button>
+            <button class="btn tool btn-success" accesskey="p" data-command="createPen" title="Teikna"><span class="typcn typcn-pencil"></span></button>
+            <button class="btn tool" accesskey="r" data-command="createRect" title="Ferhyrningur"><span class="typcn typcn-media-stop"></span></button>
+            <button class="btn tool" accesskey="c" data-command="createCircle" title="Hringur"><span class="typcn typcn-media-record"></span></button>
+            <button class="btn tool" accesskey="i" data-command="createLine" title="Lína"><span class="typcn typcn-minus"></span></button>
+            <button class="btn tool" accesskey="t" data-command="createText" title="Texti"><span class="typcn typcn-sort-alphabetically"></span></button>
             <span class="separator">&nbsp;|&nbsp;</span>
-            <button class="btn action" accesskey="u" id="undo" title="Hætta við" disabled><span class="typcn typcn-arrow-back-outline"></span></button>
-            <button class="btn action" accesskey="e" id="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
+            <button class="btn action" accesskey="u" data-command="undo" title="Hætta við" disabled><span class="typcn typcn-arrow-back-outline"></span></button>
+            <button class="btn action" accesskey="e" data-command="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
             <hr />
             <label for="foreground">Litur:</label>
             <input id="foreground" type="color" value="#000000" />
@@ -61,4 +61,5 @@
 </body>
 <script src="js/classes.js"></script>
 <script src="js/scripts.js"></script>
+<script src="js/factories.js"></script>
 </html>
