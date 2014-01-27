@@ -31,6 +31,9 @@ var Shape = Base.extend({
 
         this.dim = new Dimension(o);
         this.solid = (typeof o.solid !== "undefined" ? o.solid : false);
+        this.foreground = (typeof o.foreground !== "undefined" ? o.foreground : "#000000");
+        this.background = (typeof o.background !== "undefined" ? o.background : "#ff0000");
+        this.lineWidth = (typeof o.lineWidth !== "undefined" ? o.lineWidth : "#ff0000");
     },
 
     id: null,
@@ -38,7 +41,7 @@ var Shape = Base.extend({
     dim: null,
 
     lineWidth: 1,
-    foreground: "#000000",
+    background: "#000000",
     background: "#ff0000",
     solid: false,
 
@@ -67,12 +70,15 @@ var Rect = Shape.extend({
     },
 
     draw: function(ctx) {
-        var drawMethod = (this.solid ? 'rect' : 'strokeRect');
 
         ctx.beginPath();
+        ctx.rect(this.dim.left, this.dim.top, this.dim.width, this.dim.height);
+        if (this.solid) {
+            ctx.fillStyle = this.background;
+            ctx.fill();
+        }
+        ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.foreground;
-        ctx.fillStyle = this.background;
-        ctx[drawMethod](this.dim.left, this.dim.top, this.dim.width, this.dim.height);
         ctx.stroke();
     }
 });

@@ -20,6 +20,11 @@ var dd = {
         for (var i = this.shapes.length - 1; i >= 0; i--) {
             this.shapes[i].draw(this.ctx);
         };
+
+        // This is not working correctly
+        // if (this.activeShape !== null) {
+        //     this.activeShape.drawBorder(this.ctx);
+        // }
     },
 
     // And a reference to it for manipulating if needed

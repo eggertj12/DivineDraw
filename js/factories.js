@@ -7,6 +7,9 @@ dd.createRect = function(o) {
     top: o.y,
     width: 10,
     height: 10,
-    solid: $('input#solid').attr('checked') == "checked"
+    solid: $('input#solid').attr('checked') == "checked",
+    foreground: $('input#foreground').val(),
+    background: $('input#background').val(),
+    lineWidth: $('input#lineWidth').val()
   })
 }
