@@ -4,21 +4,21 @@ var Dimension = Base.extend({
 
     // Takes an options object as parameters
     constructor: function(o) {
-        this.left = (typeof o.left !== "undefined" ? o.left : 0);
-        this.top = (typeof o.top !== "undefined" ? o.top : 0);
+        this.x = (typeof o.x !== "undefined" ? o.x : 0);
+        this.y = (typeof o.y !== "undefined" ? o.y : 0);
         this.width = (typeof o.width !== "undefined" ? o.width : 100);
         this.height = (typeof o.height !== "undefined" ? o.height : 100);
     },
-    left: 0,
-    top: 0,
+    x: 0,
+    y: 0,
     width: 0,
     height: 0,
 
     // This function checks if the given coordinate is inside Dimension bounds
     // returns boolean
     covers: function(x, y) {
-        return (x >= this.left && x <= (this.left + this.width )) &&
-            (y >= this.top && y <= (this.top + this.height ));
+        return (x >= this.x && x <= (this.x + this.width )) &&
+            (y >= this.y && y <= (this.y + this.height ));
     }
 });
 
@@ -37,6 +37,7 @@ var Shape = Base.extend({
     },
 
     id: null,
+    type: "Shape",
 
     dim: null,
 
@@ -46,8 +47,8 @@ var Shape = Base.extend({
     solid: false,
 
     setEndPoint: function(o) {
-        this.dim.width = o.x - this.dim.left;
-        this.dim.height = o.y - this.dim.top;
+        this.dim.width = o.x - this.dim.x;
+        this.dim.height = o.y - this.dim.y;
     },
     
     draw: function() {
@@ -56,7 +57,7 @@ var Shape = Base.extend({
 
     drawBorder: function(ctx) {
         ctx.strokeStyle = "#dddddd";
-        ctx.strokeRect(this.dim.left, this.dim.top, this.dim.width, this.dim.height);
+        ctx.strokeRect(this.dim.x, this.dim.y, this.dim.width, this.dim.height);
         ctx.stroke();
     }
 });
@@ -67,12 +68,13 @@ var Rect = Shape.extend({
 
         // Just pass to super constructor
         this.base(o);
+        this.type = "Rect";
     },
 
     draw: function(ctx) {
 
         ctx.beginPath();
-        ctx.rect(this.dim.left, this.dim.top, this.dim.width, this.dim.height);
+        ctx.rect(this.dim.x, this.dim.y, this.dim.width, this.dim.height);
         if (this.solid) {
             ctx.fillStyle = this.background;
             ctx.fill();

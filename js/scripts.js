@@ -73,6 +73,11 @@ $(window).ready(function($) {
             dd.activeCommand = $(this).attr("data-command");
         });
 
+        // Toolbar command buttons
+        $('aside#toolbar button.command').on('click', function(e) {
+            dd[$(this).attr("data-command")]();
+        });
+
         // Handle dragging of toolbar
         $('aside#toolbar hr.handle').on('mousedown touchstart', function(e) {
             // To stop scrolling to take over and bubbling
