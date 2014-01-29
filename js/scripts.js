@@ -157,8 +157,11 @@ $(window).ready(function($) {
 
                 // Check if clicking on a shape
                 dd.activeShape = dd.clickedShape(start);
+
                 if (dd.activeShape !== null) {
-                    dd.dragState = "moveShape";                    
+                    dd.dragState = "moveShape";
+
+                    // TODO: Update UI with values from selected shape           
                 }
             }
         });
@@ -208,6 +211,7 @@ $(window).ready(function($) {
         // Set up a timer to draw everything, 20 fps is a reasonable time, right
         dd.renderer = setInterval(function() {
             dd.render();
+
         }, 50);
 
         // Put function declarations last for better readability
