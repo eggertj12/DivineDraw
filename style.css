@@ -48,3 +48,9 @@ aside#toolbar hr {
 canvas#surface {
     display: block;
 }
+
+input#textInput {
+    position: absolute;
+    left: 10px;
+    top:-1010px;
+}

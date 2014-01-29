@@ -36,13 +36,13 @@
             <button class="btn action" accesskey="e" data-command="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
             <hr />
             <label for="foreground">Litur:</label>
-            <input id="foreground" type="color" value="#000000" />
+            <input class="input" data-attribute="foreground" id="foreground" type="color" value="#000000" />
             <label for="background">Bakgrunnur:</label>
-            <input id="background" type="color" value="#ff0000" />
+            <input class="input" data-attribute="background"  id="background" type="color" value="#ff0000" />
             <label for="solid">Fyllt:</label>
-            <input id="solid" type="checkbox" checked />
+            <input class="check" data-attribute="solid" id="solid" type="checkbox" checked="true" />
             <label for="lineWidth">Lína:</label>
-            <input id="lineWidth" type="number" size="3" value="1" min="1" max="10" />
+            <input class="input" data-attribute="lineWidth"  id="lineWidth" type="number" size="3" value="1" min="1" max="10" />
             <label for="font">Letur:</label>
             <select id="font">
                 <option value="Arial">Arial</option>
@@ -50,12 +50,13 @@
                 <option value="Courier">Courier</option>
             </select>
             <label for="fontSize">Stærð:</label>
-            <input id="fontSize" type="number" step="4" value="8" min="8" max="36" />
+            <input class="input" data-attribute="fontSize" id="fontSize" type="number" step="4" value="8" min="8" max="36" />
 
         </aside>
         <canvas id="surface">
             <h1 class="error">Sorry, your browser sucks!!</h1>
         </canvas>
+        <input type="text" id="textInput" value="" autofocus />
     </section>
 
 </body>

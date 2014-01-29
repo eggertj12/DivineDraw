@@ -17,14 +17,29 @@ var dd = {
     render: function() {
         var i;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var i = this.shapes.length - 1; i >= 0; i--) {
+        for (var i = 0; i < this.shapes.length; i++) {
             this.shapes[i].draw(this.ctx);
+
+            if (i === this.activeShape) {
+                // Render a selected border on active shape
+                this.shapes[i].drawBorder(this.ctx);
+            }
         };
 
-        // This is not working correctly
-        // if (this.activeShape !== null) {
-        //     this.activeShape.drawBorder(this.ctx);
-        // }
+    },
+
+    clickedShape: function(point) {
+        var found = null;
+
+        // Loop backwards through shapes to find clicked
+        for (var i = this.shapes.length - 1; i >= 0; i--) {
+            if (this.shapes[i].dim.covers(point.x, point.y)) {
+                found = i;
+                break;
+            }
+        }
+
+        return found;
     },
 
     // And a reference to it for manipulating if needed
@@ -47,29 +62,32 @@ $(window).ready(function($) {
         // TODO: Call rendering action to redraw 
     });
 
+    $("input#textInput").focus();
+
     // Setup a closure which encapsulates all event handling
     (function() {
-        var dragging = false,
-            original  = {x: 0, y: 0},
+        var original  = {x: 0, y: 0},
             start     = {x: 0, y: 0},
             current   = {x: 0, y: 0};
 
-        // Clicks directly to canvas
-        $("canvas#surface").on('mousedown touchstart', function(e) {
+        /*****************************************************************
+         ** Event handlers for UI inputs
+         ******************************************************************/
 
-            start = getEventCoordinates(e);
-
-            // Add a new Shape, this is useless at this point
-            dd.activeShape = dd[dd.activeCommand](start);
-            dd.shapes.push(dd.activeShape);
-            //dd.activeShape.draw(dd.ctx);
-            dd.dragState = "createShape";
+        $("input#textInput").focus();
+        $("input#textInput").css({'visibility': 'visible'});
+        $("input#textInput").on('keydown', function () {
+            console.log(jQuery(this).val());
         });
 
         // Toolbar tool buttons
         $('aside#toolbar button.tool').on('click', function(e) {
+
+            // Reflect state of command via classes on buttons
             $('aside#toolbar button.tool').removeClass('btn-success');
             $(this).addClass("btn-success");
+
+            // Get command from button
             dd.activeCommand = $(this).attr("data-command");
         });
 
@@ -77,6 +95,35 @@ $(window).ready(function($) {
         $('aside#toolbar button.command').on('click', function(e) {
             dd[$(this).attr("data-command")]();
         });
+
+        // Shape attribute inputs that return value via .val()
+        $('aside#toolbar input.input').on('change', function(e) {
+
+            // Which attribute is being changed
+            var attribute = $(this).attr('data-attribute');
+
+            if (dd.activeShape === null) {
+                return;
+            }
+
+            // Apply to selected shape
+            dd.shapes[dd.activeShape][attribute] = $(this).val();
+        });
+
+        // Shape attribute checkboxes
+        $('aside#toolbar input.check').on('change', function(e) {
+            var attribute = $(this).attr('data-attribute');
+
+            if (dd.activeShape === null) {
+                return;
+            }
+
+            dd.shapes[dd.activeShape][attribute] = this.checked;
+        });
+
+        /*****************************************************************
+         ** Event handlers for manipulating objects
+         ******************************************************************/
 
         // Handle dragging of toolbar
         $('aside#toolbar hr.handle').on('mousedown touchstart', function(e) {
@@ -90,6 +137,30 @@ $(window).ready(function($) {
             original.x = parseInt($('aside#toolbar').css('left'));
             original.y = parseInt($('aside#toolbar').css('bottom'));
 
+        });
+
+        // Clicks directly to canvas
+        $("canvas#surface").on('mousedown touchstart', function(e) {
+
+            start = getEventCoordinates(e);
+
+            // Is a create command active
+            if (dd.activeCommand.indexOf('create') === 0) {
+
+                // Add a new Shape, calls a factory function on dd object
+                // Push returns new length of array
+                dd.activeShape = dd.shapes.push(dd[dd.activeCommand](start)) - 1;
+                dd.dragState = "createShape";
+            }
+
+            if (dd.activeCommand === 'moveShape') {
+
+                // Check if clicking on a shape
+                dd.activeShape = dd.clickedShape(start);
+                if (dd.activeShape !== null) {
+                    dd.dragState = "moveShape";                    
+                }
+            }
         });
 
         // General drag handler for all movement
@@ -108,7 +179,11 @@ $(window).ready(function($) {
                     moveToolbar(original, start, current);
                     break;
                 case "createShape":
-                    dd.activeShape.setEndPoint(current);
+                    dd.shapes[dd.activeShape].setEndPoint(current);
+                    break;
+                case "moveShape":
+                    dd.shapes[dd.activeShape].move(current, start);
+                    start = current;
                     break;
             }
         
@@ -125,6 +200,10 @@ $(window).ready(function($) {
             // Dragging has stopped
             dd.dragState = "";
         });
+
+        /*****************************************************************
+         ** Helpers
+         ******************************************************************/
 
         // Set up a timer to draw everything, 20 fps is a reasonable time, right
         dd.renderer = setInterval(function() {
@@ -159,98 +238,3 @@ $(window).ready(function($) {
     } ());
 
 });
-
-
-$("canvas")
-.mousedown(function(e) {
-    dd.startX = e.offsetX;
-    dd.startY = e.offsetY;
-})
-.mouseup(function(e) {
-    dd.endX = e.offsetX;
-    dd.endY = e.offsetY;
-    drawLine();
-})
-
-function drawLine() {
-    var c=document.getElementById("surface");
-    var ctx=c.getContext("2d");
-    ctx.beginPath();
-    ctx.moveTo(dd.startX, dd.startY);
-    ctx.lineTo(dd.endX, dd.endY);
-    ctx.closePath();
-
-    ctx.strokeStyle = $('input#foreground').val();
-    ctx.stroke();
-}
-/*
-function Line() {
-    
-}
-
-function startLine(){
-
-}
-
-
-function drawRedRectangle() {
-    var c=document.getElementById("surface");
-    var ctx=c.getContext("2d");
-    ctx.fillStyle="FF0000";
-    ctx.fillRect(0,0,150,75);
-}
-
-function drawSomeLine() {
-var c=document.getElementById("surface");
-var ctx=c.getContext("2d");
-ctx.moveTo(0,0);
-ctx.lineTo(100,100);
-ctx.stroke();
-}
-
-function drawSomePseudoCircle() {
-var c=document.getElementById("surface");
-var ctx=c.getContext("2d");
-ctx.beginPath();
-ctx.arc(100,100,40,0,2*Math.PI);
-ctx.stroke();
-}
-
-function writeHelloWorld() {
-var c=document.getElementById("surface");
-var ctx=c.getContext("2d");
-ctx.font="30px Arial";
-ctx.fillText("Hello World", 10, 50);
-}
-
-function writeHelloWorldAgain() {
-var c=document.getElementById("surface");
-var ctx=c.getContext("2d");
-ctx.font="30px Arial";
-ctx.strokeText("Hello World",10,50);
-}
-
-function linearGradientExample() {
-var c=document.getElementById("surface");
-var ctx=c.getContext("2d");
-//Create a gradient
-var grd = ctx.createLinearGradient(0,0,200,0);
-grd.addColorStop(0,"red");
-grd.addColorStop(1,"white");
-//Fill a rectangle with this gradient
-ctx.fillStyle=grd;
-ctx.fillRect(10,10,150,80);
-}
-
-function radialGradientExample() {
-var c=document.getElementById("surface");
-var ctx=c.getContext("2d");
-//Create the gradient
-var grd=ctx.createRadialGradient(75,50,5,90,60,100);
-grd.addColorStop(0,"red");
-grd.addColorStop(1,"white");
-//Fill with gradient
-ctx.fillStyle=grd;
-ctx.fillRect(10,10,150,80);
-}
-*/

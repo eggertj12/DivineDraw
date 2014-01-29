@@ -11,6 +11,7 @@ dd.newDrawing = function() {
     // For now just trash everything
     // Should really give some warning
     this.shapes = [];
+    this.activeShape = null;
 }
 
 dd.saveDrawing = function() {
@@ -29,9 +30,10 @@ dd.loadDrawing = function() {
     // For now just a single possible save
     loaded = JSON.parse(localStorage.getItem("dd"));
 
-    for (var i = loaded.length - 1; i >= 0; i--) {
+    for (var i = 0; i < loaded.length; i++) {
 
         // Need to merge loaded object with it's child dim since factory expects a flat object
+        // Conveniently jQuery has a method for this
         jQuery.extend(loaded[i], loaded[i].dim);
 
         // Get a new shape from the factory for this type

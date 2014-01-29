@@ -50,15 +50,32 @@ var Shape = Base.extend({
         this.dim.width = o.x - this.dim.x;
         this.dim.height = o.y - this.dim.y;
     },
+
+    move: function(to, from) {
+        this.dim.x += to.x - from.x;
+        this.dim.y += to.y - from.y;
+    },
     
     draw: function() {
         console.log('Shape.draw should be overridden!');
     },
 
+    borderStatus: true,
+    borderCount: 0,
+
     drawBorder: function(ctx) {
-        ctx.strokeStyle = "#dddddd";
-        ctx.strokeRect(this.dim.x, this.dim.y, this.dim.width, this.dim.height);
-        ctx.stroke();
+        // Toggle drawing of active border every 5 redraws
+        if (this.borderCount++ > 5) {
+            this.borderStatus = !this.borderStatus;
+            this.borderCount = 0;
+        }
+
+        if (this.borderStatus) {
+            ctx.strokeStyle = this.borderColor;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(this.dim.x, this.dim.y, this.dim.width, this.dim.height);
+            ctx.stroke();
+        }
     }
 });
 
