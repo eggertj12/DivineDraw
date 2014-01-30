@@ -10,8 +10,10 @@ dd.newDrawing = function() {
     
     // For now just trash everything
     // Should really give some warning
-    this.shapes = [];
-    this.activeShape = null;
+    if (confirm('Viltu henda teikningu?')) {
+        this.shapes = [];
+        this.activeShape = null;
+    }
 }
 
 dd.saveDrawing = function() {

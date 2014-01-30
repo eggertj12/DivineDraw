@@ -11,8 +11,8 @@ var Dimension = Base.extend({
 
         this.left = Math.min(this.startx, this.endx);
         this.top = Math.min(this.starty, this.endy);
-        this.width = Math.abs(this.startx - this.endx);
-        this.height = Math.abs(this.starty - this.endy);
+        this.right = Math.max(this.startx, this.endx);
+        this.bottom = Math.max(this.starty, this.endy);
 
         this.font = o.font;
         this.fontSize = o.fontSize;
@@ -31,14 +31,14 @@ var Dimension = Base.extend({
     // And this is (calculated) bounding box for object
     top: 0,
     left: 0,
-    width: 0,
-    height: 0,
+    right: 0,
+    bottom: 0,
 
     // This function checks if the given coordinate is inside Dimension bounds
     // returns boolean
     covers: function(x, y) {
-        return (x >= this.left && x <= this.left + this.width) &&
-            (y >= this.top && y <= this.top + this.height);
+        return (x >= this.left && x <= this.right) &&
+            (y >= this.top && y <= this.bottom);
     }
 });
 
@@ -74,8 +74,8 @@ var Shape = Base.extend({
         // Will need to be overridden by Pen Shape
         this.dim.left = Math.min(this.dim.startx, this.dim.endx);
         this.dim.top = Math.min(this.dim.starty, this.dim.endy);
-        this.dim.width = Math.abs(this.dim.startx - this.dim.endx);
-        this.dim.height = Math.abs(this.dim.starty - this.dim.endy);
+        this.dim.right = Math.max(this.dim.startx, this.dim.endx);
+        this.dim.bottom = Math.max(this.dim.starty, this.dim.endy);
     },
 
     move: function(to, from) {
@@ -93,22 +93,21 @@ var Shape = Base.extend({
         console.log('Shape.draw should be overridden!');
     },
 
-    borderStatus: true,
+    borderColor: "#555555",
     borderCount: 0,
 
     drawBorder: function(ctx) {
         // Toggle drawing of active border every 5 redraws
         if (this.borderCount++ > 5) {
-            this.borderStatus = !this.borderStatus;
+            this.borderColor = (this.borderColor === "#555555" ? "#999999" : "#555555");
             this.borderCount = 0;
         }
 
-        if (this.borderStatus) {
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(this.dim.left, this.dim.top, this.dim.width, this.dim.height);
-            ctx.stroke();
-        }
+        ctx.strokeStyle = this.borderColor;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.strokeRect(this.dim.left, this.dim.top, this.dim.right - this.dim.left, this.dim.bottom - this.dim.top);
+        ctx.stroke();
     }
 });
 
@@ -124,7 +123,7 @@ var Rect = Shape.extend({
     draw: function(ctx) {
 
         ctx.beginPath();
-        ctx.rect(this.dim.left, this.dim.top, this.dim.width, this.dim.height);
+        ctx.rect(this.dim.left, this.dim.top, this.dim.right - this.dim.left, this.dim.bottom - this.dim.top);
         if (this.solid) {
             ctx.fillStyle = this.background;
             ctx.fill();
@@ -135,18 +134,66 @@ var Rect = Shape.extend({
     }
 });
 
+var Pen = Shape.extend({
+    // Takes an options object as parameters
+    constructor: function(o) {
+
+        // Just pass to super constructor
+        this.base(o);
+        this.type = "Pen";
+        this.points = [];
+    },
+
+    points: null,
+
+    setEndPoint: function(o) {
+        var point;
+
+        this.dim.endx = o.x;
+        this.dim.endy = o.y;
+
+        // Update bounding box
+        this.dim.left = Math.min(this.dim.left, o.x);
+        this.dim.top = Math.min(this.dim.top, o.y);
+        this.dim.right = Math.max(this.dim.right, o.x);
+        this.dim.bottom = Math.max(this.dim.bottom, o.y);
+
+        // Points are stored relative to starting point to ease moving of object
+        point = {
+            x: o.x - this.dim.startx,
+            y: o.y - this.dim.starty
+        };
+
+        this.points.push(point);
+    },
+
+    draw: function(ctx) {
+
+        ctx.lineWidth = this.lineWidth;
+        ctx.strokeStyle = this.foreground;
+        ctx.beginPath();
+
+        ctx.moveTo(this.dim.startx, this.dim.starty);
+        for (var i = 0; i < this.points.length; i++) {
+            ctx.lineTo(this.points[i].x + this.dim.startx, this.points[i].y + this.dim.starty);
+        };
+
+        ctx.stroke();
+    }
+});
+
 var Circle = Shape.extend({
     //
     constructor: function(o) {
         this.base(o);
-        this.type = "Rect";
+        this.type = "Circle";
     },
 
     draw: function(ctx) {
 
         ctx.beginPath();
         // The arc function and this circle assumes that the inputs for startx + endx == starty + endy
-        var radius = (this.dim.width + this.dim.height) / 4;
+        var radius = ((this.dim.right - this.dim.left) + (this.dim.bottom - this.dim.top)) / 4;
         ctx.arc((this.dim.left+radius), (this.dim.top+radius), radius, 0, 2*Math.PI);
         if (this.solid) {
             ctx.fillStyle = this.background;
@@ -171,6 +218,8 @@ var Line = Shape.extend({
         ctx.beginPath();
         ctx.moveTo(this.dim.startx, this.dim.starty);
         ctx.lineTo(this.dim.endx, this.dim.endy);
+
+        // Is this necessary ??
         if (this.solid) {
             ctx.fillStyle = this.background;
             ctx.fill();
@@ -179,9 +228,8 @@ var Line = Shape.extend({
         ctx.strokeStyle = this.foreground;
         ctx.stroke();
     }
-
-
 });
+
 
 var Text = Shape.extend({
 

@@ -41,3 +41,7 @@ dd.createLine = function(o) {
 dd.createText = function(o) {
   return new Text(this.defaultsForShape(o));
 }
+
+dd.createPen = function(o) {
+  return new Pen(this.defaultsForShape(o));
+}
