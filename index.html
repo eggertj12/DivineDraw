@@ -18,23 +18,36 @@
 </head>
 <body>
     <section id="editor">
+
         <aside id="toolbar">
             <hr class="handle" />
             <!-- Icons from typicons.com -->
+
+            <!-- File commands -->
             <button class="btn command" accesskey="n" data-command="newDrawing" title="Ný teikning"><span class="typcn typcn-document"></span></button>
             <button class="btn command" accesskey="l" data-command="loadDrawing" title="Hlaða teikningu"><span class="typcn typcn-upload-outline"></span></button>
             <button class="btn command" accesskey="s" data-command="saveDrawing" title="Vista teikningu"><span class="typcn typcn-download-outline"></span></button>
+
             <span class="separator">&nbsp;|&nbsp;</span>
+
+            <!-- Drawing tools -->
             <button class="btn tool" accesskey="m" data-command="moveShape" title="Færa"><span class="typcn typcn-arrow-move"></span></button>
             <button class="btn tool btn-success" accesskey="p" data-command="createPen" title="Teikna"><span class="typcn typcn-pencil"></span></button>
             <button class="btn tool" accesskey="r" data-command="createRect" title="Ferhyrningur"><span class="typcn typcn-media-stop"></span></button>
             <button class="btn tool" accesskey="c" data-command="createCircle" title="Hringur"><span class="typcn typcn-media-record"></span></button>
             <button class="btn tool" accesskey="i" data-command="createLine" title="Lína"><span class="typcn typcn-minus"></span></button>
             <button class="btn tool" accesskey="t" data-command="createText" title="Texti"><span class="typcn typcn-sort-alphabetically"></span></button>
+
             <span class="separator">&nbsp;|&nbsp;</span>
+
+            <!-- Shape stack actions -->
+            <button class="btn action" accesskey="d" data-command="delete" title="Eyða"><span class="typcn typcn-trash"></span></button>
             <button class="btn action" accesskey="u" data-command="undo" title="Hætta við" disabled><span class="typcn typcn-arrow-back-outline"></span></button>
             <button class="btn action" accesskey="e" data-command="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
+
             <hr />
+
+            <!-- Shape attributes -->
             <label for="foreground">Litur:</label>
             <input class="input" data-attribute="foreground" id="foreground" type="color" value="#000000" />
             <label for="background">Bakgrunnur:</label>
@@ -43,6 +56,8 @@
             <input class="check" data-attribute="solid" id="solid" type="checkbox" checked="true" />
             <label for="lineWidth">Lína:</label>
             <input class="input" data-attribute="lineWidth"  id="lineWidth" type="number" size="3" value="1" min="1" max="10" />
+
+            <!-- Text attributes -->
             <label for="font">Letur:</label>
             <select id="font">
                 <option value="Arial">Arial</option>
@@ -53,10 +68,23 @@
             <input class="input" data-attribute="fontSize" id="fontSize" type="number" step="4" value="8" min="8" max="36" />
 
         </aside>
+
+        <!-- Not much of a markup for the meat of the project -->
         <canvas id="surface">
             <h1 class="error">Sorry, your browser sucks!!</h1>
         </canvas>
-        <input type="text" id="textInput" value="" autofocus />
+
+    </section>
+
+    <!-- File save dialog -->
+    <section id="fileUI">
+        <aside id="filebox">
+            <ul id="files"></ul>
+            <div id="buttons">
+                <button class="btn" id="fileOk">Staðfesta</button>
+                <button class="btn" id="fileCancel">Hætta við</button>
+            </div>
+        </aside>
     </section>
 
 </body>

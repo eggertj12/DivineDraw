@@ -3,6 +3,10 @@ html, body {
     height:100%;
 }
 
+body {
+    position: relative;
+}
+
 section#editor {
     position:relative;
     width:100%;
@@ -49,8 +53,29 @@ canvas#surface {
     display: block;
 }
 
-input#textInput {
+
+section#fileUI {
+    top: 0;
+    left: 0;
     position: absolute;
-    left: 10px;
-    top:-1010px;
+    width:100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
 }
+
+aside#filebox {
+    width:300px;
+    max-height: 80%;
+    margin: 10% auto;
+    padding:20px;
+    border:1px solid grey;
+    border-radius: 5px;   
+    background-color: white;
+}
+
+aside#filebox div#buttons {
+    text-align: center;
+}
+
+

@@ -20,6 +20,8 @@ dd.saveDrawing = function() {
     localStorage.setItem("dd", JSON.stringify(this.shapes));
 }
 
+
+
 dd.loadDrawing = function() {
 
     var loaded   = [],
