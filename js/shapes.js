@@ -13,7 +13,14 @@ var Dimension = Base.extend({
         this.top = Math.min(this.starty, this.endy);
         this.width = Math.abs(this.startx - this.endx);
         this.height = Math.abs(this.starty - this.endy);
+
+        this.font = o.font;
+        this.fontSize = o.fontSize;
     },
+
+    // This is for text
+    font: "null",
+    fontSize: 0,
 
     // These variables hold the start and end points for the shape
     startx: 0,
@@ -127,3 +134,78 @@ var Rect = Shape.extend({
         ctx.stroke();
     }
 });
+
+var Circle = Shape.extend({
+    //
+    constructor: function(o) {
+        this.base(o);
+        this.type = "Rect";
+    },
+
+    draw: function(ctx) {
+
+        ctx.beginPath();
+        // The arc function and this circle assumes that the inputs for startx + endx == starty + endy
+        var radius = (this.dim.width + this.dim.height) / 4;
+        ctx.arc((this.dim.left+radius), (this.dim.top+radius), radius, 0, 2*Math.PI);
+        if (this.solid) {
+            ctx.fillStyle = this.background;
+            ctx.fill();
+        }
+        ctx.lineWidth = this.lineWidth;
+        ctx.strokeStyle = this.foreground;
+        ctx.stroke();
+
+    }
+});
+
+var Line = Shape.extend({
+    //
+    constructor: function(o) {
+        this.base(o);
+        this.type = "Line";
+    },
+
+    draw: function(ctx) {
+
+        ctx.beginPath();
+        ctx.moveTo(this.dim.startx, this.dim.starty);
+        ctx.lineTo(this.dim.endx, this.dim.endy);
+        if (this.solid) {
+            ctx.fillStyle = this.background;
+            ctx.fill();
+        }
+        ctx.lineWidth = this.lineWidth;
+        ctx.strokeStyle = this.foreground;
+        ctx.stroke();
+    }
+
+
+});
+
+var Text = Shape.extend({
+
+    constructor: function(o) {
+        this.base(o);
+        this.type = "Text";
+    },
+
+    draw: function(ctx) {
+
+        /*Eg var einmitt ad tala um hve ljotur kodinn minn er i
+        samanburdi. Check it!
+        */
+
+        var aest = "bold";
+        var space = " ";
+        var fontType = this.dim.font;
+        var fontSize = this.dim.fontSize;
+        var result = aest.concat(space);
+        var result = result.concat(fontSize);
+        var result = result.concat(space);
+        var result = result.concat(fontType);
+
+        ctx.font = "result";
+        ctx.fillText("Text!", this.dim.startx, this.dim.starty);
+    }
+})

@@ -19,10 +19,25 @@ dd.defaultsForShape = function(o) {
     solid: (typeof o.solid !== "undefined" ? o.solid : solid.checked),
     foreground: (typeof o.foreground !== "undefined" ? o.foreground : $('input#foreground').val()),
     background: (typeof o.background !== "undefined" ? o.background : $('input#background').val()),
-    lineWidth: (typeof o.lineWidth !== "undefined" ? o.lineWidth : $('input#lineWidth').val())
+    lineWidth: (typeof o.lineWidth !== "undefined" ? o.lineWidth : $('input#lineWidth').val()),
+    font: (typeof o.font !== "undefined" ? o.font: "arial"),
+    fontSize: (typeof o.fontSize !== "undefined" ? o.fontSize: 8),
+
   };
 }
 
 dd.createRect = function(o) {
   return new Rect(this.defaultsForShape(o));
+}
+
+dd.createCircle = function(o) {
+  return new Circle(this.defaultsForShape(o));
+}
+
+dd.createLine = function(o) {
+  return new Line(this.defaultsForShape(o));
+}
+
+dd.createText = function(o) {
+  return new Text(this.defaultsForShape(o));
 }
