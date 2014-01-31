@@ -7,7 +7,7 @@ var dd = {
     shapes:      [],
 
     // Need to know our current state
-    activeShape: null,
+    activeShapes: [],
     activeCommand:  "createPen",
 
     // And for the event handlers to know what is happening
@@ -20,7 +20,7 @@ var dd = {
         for (var i = 0; i < this.shapes.length; i++) {
             this.shapes[i].draw(this.ctx);
 
-            if (i === this.activeShape) {
+            if (this.activeShapes.indexOf(i) !== -1) {
                 // Render a selected border on active shape
                 this.shapes[i].drawBorder(this.ctx);
             }
@@ -47,6 +47,12 @@ var dd = {
 };
 
 $(window).ready(function($) {
+    // Start by verifying that localStorage is available
+    if (!Modernizr.localstorage) {
+        alert('Vafrinn þinn styður ekki localStorage. Þú munt ekki geta vistað teikninguna.');
+        $('button#loadDrawing, button#saveDrawing').attr('disabled', 'disabled');
+    }
+
     dd.canvas = document.getElementById('surface');
     dd.ctx = dd.canvas.getContext("2d");
 
@@ -102,24 +108,53 @@ $(window).ready(function($) {
             // Which attribute is being changed
             var attribute = $(this).attr('data-attribute');
 
-            if (dd.activeShape === null) {
+            if (dd.activeShapes.length === 0) {
                 return;
             }
 
-            // Apply to selected shape
-            dd.shapes[dd.activeShape][attribute] = $(this).val();
+            // Apply to all selected shapes
+            for (var i = 0; i < dd.activeShapes.length; i++) {
+                dd.shapes[dd.activeShapes[i]][attribute] = $(this).val();
+            };
         });
 
         // Shape attribute checkboxes
         $('aside#toolbar input.check').on('change', function(e) {
             var attribute = $(this).attr('data-attribute');
 
-            if (dd.activeShape === null) {
+            if (dd.activeShapes.length === 0) {
                 return;
             }
 
-            dd.shapes[dd.activeShape][attribute] = this.checked;
+            // Apply to all selected shapes
+            for (var i = 0; i < dd.activeShapes.length; i++) {
+                dd.shapes[dd.activeShapes[i]][attribute] = this.checked;
+            };
         });
+
+        /*****************************************************************
+         ** Event handlers for file UI
+         ******************************************************************/
+
+        // Clicks to the buttons
+        $('button#fileLoad').on('click', function() {
+            var fileName = $('input#fileName').val();
+            dd.loadShapes(fileName);
+        });
+
+        $('button#fileSave').on('click', function() {
+            var fileName = $('input#fileName').val();
+            dd.saveShapes(fileName);
+        });
+        $('button#fileCancel').on('click', dd.cancelFileUI);
+
+        // Need to stop clicks on file dialog from bubbling to background
+        $('aside#filebox').on('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Cancel file on background click
+        $('section#fileUI').on('click', dd.cancelFileUI);
 
         /*****************************************************************
          ** Event handlers for manipulating objects
@@ -141,6 +176,7 @@ $(window).ready(function($) {
 
         // Clicks directly to canvas
         $("canvas#surface").on('mousedown touchstart', function(e) {
+            var clickedShape;
 
             start = getEventCoordinates(e);
 
@@ -149,19 +185,30 @@ $(window).ready(function($) {
 
                 // Add a new Shape, calls a factory function on dd object
                 // Push returns new length of array
-                dd.activeShape = dd.shapes.push(dd[dd.activeCommand](start)) - 1;
+                dd.activeShapes.length = 0;
+                dd.activeShapes.push(dd.shapes.push(dd[dd.activeCommand](start)) - 1);
                 dd.dragState = "createShape";
             }
 
             if (dd.activeCommand === 'moveShape') {
 
                 // Check if clicking on a shape
-                dd.activeShape = dd.clickedShape(start);
+                clickedShape = dd.clickedShape(start);
 
-                if (dd.activeShape !== null) {
+                if (clickedShape !== null) {
+                    if (!e.shiftKey && dd.activeShapes.indexOf(clickedShape) === -1) {
+                        dd.activeShapes.length = 0;
+                    }
+                    if (dd.activeShapes.indexOf(clickedShape) === -1) {
+                        dd.activeShapes.push(clickedShape);
+                    }
                     dd.dragState = "moveShape";
 
                     // TODO: Update UI with values from selected shape           
+                } else {
+                    dd.activeShapes.length = 0;
+
+                    // TODO: allow selection of multiple items
                 }
             }
         });
@@ -182,10 +229,12 @@ $(window).ready(function($) {
                     moveToolbar(original, start, current);
                     break;
                 case "createShape":
-                    dd.shapes[dd.activeShape].setEndPoint(current);
+                    dd.shapes[dd.activeShapes[0]].setEndPoint(current);
                     break;
                 case "moveShape":
-                    dd.shapes[dd.activeShape].move(current, start);
+                    for (var i = 0; i < dd.activeShapes.length; i++) {
+                        dd.shapes[dd.activeShapes[i]].move(current, start);
+                    };
                     start = current;
                     break;
             }

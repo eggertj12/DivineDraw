@@ -11,19 +11,19 @@
 // This populates all possible parameters, each constructor will then only use what it needs
 dd.defaultsForShape = function(o) {
   var solid = document.getElementById('solid');
-  return {
-    x: o.x,
-    y: o.y,
-    width: (typeof o.width !== "undefined" ? o.width : 10),
-    height: (typeof o.height !== "undefined" ? o.height : 10),
-    solid: (typeof o.solid !== "undefined" ? o.solid : solid.checked),
-    foreground: (typeof o.foreground !== "undefined" ? o.foreground : $('input#foreground').val()),
-    background: (typeof o.background !== "undefined" ? o.background : $('input#background').val()),
-    lineWidth: (typeof o.lineWidth !== "undefined" ? o.lineWidth : $('input#lineWidth').val()),
-    font: (typeof o.font !== "undefined" ? o.font: "arial"),
-    fontSize: (typeof o.fontSize !== "undefined" ? o.fontSize: 8),
 
-  };
+  o.startx = (typeof o.x !== "undefined" ? o.x : o.startx);
+  o.starty = (typeof o.y !== "undefined" ? o.y : o.starty);
+  o.endx = (typeof o.endx !== "undefined" ? o.endx : o.x + 1);
+  o.endy = (typeof o.endy !== "undefined" ? o.endy : o.y + 1);
+  o.solid = (typeof o.solid !== "undefined" ? o.solid : solid.checked);
+  o.foreground = (typeof o.foreground !== "undefined" ? o.foreground : $('input#foreground').val());
+  o.background = (typeof o.background !== "undefined" ? o.background : $('input#background').val());
+  o.lineWidth = (typeof o.lineWidth !== "undefined" ? o.lineWidth : $('input#lineWidth').val());
+  o.font = (typeof o.font !== "undefined" ? o.font: "arial");
+  o.fontSize = (typeof o.fontSize !== "undefined" ? o.fontSize: 8);
+
+  return o;
 }
 
 dd.createRect = function(o) {

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="style.css" />
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js"></script>
     <script src="lib/base.js"></script>
     
     
@@ -25,8 +26,8 @@
 
             <!-- File commands -->
             <button class="btn command" accesskey="n" data-command="newDrawing" title="Ný teikning"><span class="typcn typcn-document"></span></button>
-            <button class="btn command" accesskey="l" data-command="loadDrawing" title="Hlaða teikningu"><span class="typcn typcn-upload-outline"></span></button>
-            <button class="btn command" accesskey="s" data-command="saveDrawing" title="Vista teikningu"><span class="typcn typcn-download-outline"></span></button>
+            <button class="btn command" accesskey="l" data-command="loadDrawing" id="loadDrawing" title="Hlaða teikningu"><span class="typcn typcn-upload-outline"></span></button>
+            <button class="btn command" accesskey="s" data-command="saveDrawing" id="saveDrawing" title="Vista teikningu"><span class="typcn typcn-download-outline"></span></button>
 
             <span class="separator">&nbsp;|&nbsp;</span>
 
@@ -79,9 +80,20 @@
     <!-- File save dialog -->
     <section id="fileUI">
         <aside id="filebox">
+            <h1>Vista skrá</h1>
             <ul id="files"></ul>
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <label for="fileName" class="col-sm-4 control-label">Skráarnafn:</label>
+                <div class="col-sm-8">
+                  <input type="input" class="form-control" id="fileName" placeholder="Sláðu inn nafn eða veldu úr lista ...">
+                </div>
+              </div>
+            </form>
+
             <div id="buttons">
-                <button class="btn" id="fileOk">Staðfesta</button>
+                <button class="btn" id="fileLoad">Hlaða</button>
+                <button class="btn" id="fileSave">Vista</button>
                 <button class="btn" id="fileCancel">Hætta við</button>
             </div>
         </aside>

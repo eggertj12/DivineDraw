@@ -4,10 +4,10 @@ var Dimension = Base.extend({
 
     // Takes an options object as parameters
     constructor: function(o) {
-        this.startx = (typeof o.x !== "undefined" ? o.x : 0);
-        this.starty = (typeof o.y !== "undefined" ? o.y : 0);
-        this.endx = (typeof o.width !== "undefined" ? o.width + o.x : 10 + o.x);
-        this.endy = (typeof o.height !== "undefined" ? o.height + o.y : 10 + o.y);
+        this.startx = o.startx;
+        this.starty = o.starty;
+        this.endx = o.endx;
+        this.endy = o.endy;
 
         this.left = Math.min(this.startx, this.endx);
         this.top = Math.min(this.starty, this.endy);
@@ -79,14 +79,19 @@ var Shape = Base.extend({
     },
 
     move: function(to, from) {
-        this.dim.startx += to.x - from.x;
-        this.dim.starty += to.y - from.y;
-        this.dim.endx += to.x - from.x;
-        this.dim.endy += to.y - from.y;
+        var deltax = to.x - from.x,
+            deltay = to.y - from.y;
+
+        this.dim.startx += deltax;
+        this.dim.starty += deltay;
+        this.dim.endx += deltax;
+        this.dim.endy += deltay;
 
         // Update bounding box
-        this.dim.left += to.x - from.x;
-        this.dim.top += to.y - from.y;
+        this.dim.left += deltax;
+        this.dim.top += deltay;
+        this.dim.right += deltax;
+        this.dim.bottom += deltay;
     },
     
     draw: function() {
@@ -141,7 +146,14 @@ var Pen = Shape.extend({
         // Just pass to super constructor
         this.base(o);
         this.type = "Pen";
-        this.points = [];
+        this.points = (typeof o.points !== "undefined" ? o.points : []);
+
+        if (typeof o.left !== "undefined") {
+            this.dim.left = o.left;
+            this.dim.top = o.top;
+            this.dim.right = o.right;
+            this.dim.bottom = o.bottom;
+        }
     },
 
     points: null,
