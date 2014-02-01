@@ -10,9 +10,14 @@ dd.newDrawing = function() {
     
     // For now just trash everything
     // Should really give some warning
-    if (confirm('Viltu henda teikningu?')) {
+    if (dd.modified) {
+        if (confirm('Viltu henda teikningu?')) {
+            this.shapes = [];
+            this.activeShapes = [];
+        }
+    } else {
         this.shapes = [];
-        this.activeShape = null;
+        this.activeShapes = [];
     }
 }
 
@@ -25,18 +30,6 @@ dd.filenameClicked = function() {
 }
 
 dd.files = [],
-
-dd.getFileList = function() {
-    var fileString,
-        files = [];
-
-    // Get the list of saved files
-    fileString = localStorage.getItem('dd.savedFiles');
-    if (fileString) {
-        files = fileString.split('|');
-    }
-    return files;
-},
 
 dd.saveDrawing = function() {
     this.files = this.getFileList();
@@ -59,6 +52,12 @@ dd.saveDrawing = function() {
 }
 
 dd.loadDrawing = function() {
+    if (dd.modified) {
+        if (!confirm('Viltu henda núverandi teikningu?')) {
+            return;
+        }
+    }
+
     this.files = this.getFileList();
 
     // Build file list UI
@@ -77,6 +76,20 @@ dd.loadDrawing = function() {
     // Show file UI
     jQuery('section#fileUI').css('display', 'block');
 }
+
+
+dd.getFileList = function() {
+    var fileString,
+        files = [];
+
+    // Get the list of saved files
+    fileString = localStorage.getItem('dd.savedFiles');
+    if (fileString) {
+        files = fileString.split('|');
+    }
+    return files;
+},
+
 
 dd.saveShapes = function(filename) {
 
@@ -105,6 +118,9 @@ dd.saveShapes = function(filename) {
     // the shapelist for drawing
     localStorage.setItem('dd.' + filename, JSON.stringify(this.shapes));
 
+    dd.modified = false;
+    dd.undos.length = 0;
+    dd.redos.length = 0;
     this.cancelFileUI();
 }
 
@@ -138,5 +154,8 @@ dd.loadShapes = function(filename) {
         this.shapes.push(dd[factory](loaded[i]));
     };
 
+    dd.modified = false;
+    dd.undos.length = 0;
+    dd.redos.length = 0;
     this.cancelFileUI();
 }
