@@ -42,9 +42,9 @@
             <span class="separator">&nbsp;|&nbsp;</span>
 
             <!-- Shape stack actions -->
-            <button class="btn action" accesskey="d" data-command="delete" title="Eyða"><span class="typcn typcn-trash"></span></button>
-            <button class="btn action" accesskey="u" data-command="undo" title="Hætta við" disabled><span class="typcn typcn-arrow-back-outline"></span></button>
-            <button class="btn action" accesskey="e" data-command="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
+            <button class="btn action" accesskey="d" id="delete" title="Eyða"><span class="typcn typcn-trash"></span></button>
+            <button class="btn action" accesskey="u" id="undo" title="Hætta við" disabled><span class="typcn typcn-arrow-back-outline"></span></button>
+            <button class="btn action" accesskey="e" id="redo" title="Gera aftur" disabled><span class="typcn typcn-arrow-forward-outline"></span></button>
 
             <hr />
 
@@ -105,6 +105,7 @@
 
 </body>
 <script src="js/shapes.js"></script>
+<script src="js/actions.js"></script>
 <script src="js/scripts.js"></script>
 <script src="js/factories.js"></script>
 <script src="js/commands.js"></script>

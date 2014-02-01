@@ -27,6 +27,29 @@ var Dimension = Base.extend({
     right: 0,
     bottom: 0,
 
+    move: function(to, from) {
+        var deltax = to.x - from.x,
+            deltay = to.y - from.y;
+
+        this.startx += deltax;
+        this.starty += deltay;
+        this.endx += deltax;
+        this.endy += deltay;
+
+        // Update bounding box
+        this.left += deltax;
+        this.top += deltay;
+        this.right += deltax;
+        this.bottom += deltay;
+    },
+
+    getPos: function() {
+        return {
+            x: this.left, 
+            y: this.top
+        };
+    },
+    
     // This function checks if the given coordinate is inside Dimension bounds
     // returns boolean
     covers: function(x, y) {
@@ -72,19 +95,7 @@ var Shape = Base.extend({
     },
 
     move: function(to, from) {
-        var deltax = to.x - from.x,
-            deltay = to.y - from.y;
-
-        this.dim.startx += deltax;
-        this.dim.starty += deltay;
-        this.dim.endx += deltax;
-        this.dim.endy += deltay;
-
-        // Update bounding box
-        this.dim.left += deltax;
-        this.dim.top += deltay;
-        this.dim.right += deltax;
-        this.dim.bottom += deltay;
+        this.dim.move(to, from);
     },
     
     draw: function() {

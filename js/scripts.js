@@ -5,13 +5,19 @@ var dd = {
     canvas:      null,
     ctx:         null,
     shapes:      [],
+    undos:       [],
+    redos:       [],
 
     // Need to know our current state
     activeShapes: [],
     activeCommand:  "createPen",
 
+    // For alerting when clearing
+    modified: false,
+
     // And for the event handlers to know what is happening
-    dragState:   "",
+    dragState: "",
+    moveUndo: false, 
 
     // A render function for drawing all those Divine things
     render: function() {
@@ -28,6 +34,7 @@ var dd = {
 
     },
 
+    // Check if this point contains a shape
     clickedShape: function(point) {
         var found = null;
 
@@ -64,8 +71,6 @@ $(window).ready(function($) {
     $(window).on('resize', function() {
         dd.canvas.width = window.innerWidth;
         dd.canvas.height = window.innerHeight;
-
-        // TODO: Call rendering action to redraw 
     });
     //  No need to focus this - here, that is?
     // $("input#textInput").focus();
@@ -96,11 +101,86 @@ $(window).ready(function($) {
 
             // Get command from button
             dd.activeCommand = $(this).attr("data-command");
+
+            // Deselect all shapes
+            dd.activeShapes.length = 0;
         });
 
         // Toolbar command buttons
         $('aside#toolbar button.command').on('click', function(e) {
             dd[$(this).attr("data-command")]();
+        });
+
+        // Toolbar tool buttons
+        $('aside#toolbar button#delete').on('click', function(e) {
+            var shapes = [];
+
+            // Nothing to do if no shape(s) selected
+            if (dd.activeShapes.length === 0) {
+                return;
+            }
+
+            // DeleteShapeAction takes care of the actual deletion. Just assemble the Shapes
+            for (var i = dd.activeShapes.length - 1; i >= 0; i--) {
+                shapes.push(dd.shapes[dd.activeShapes[i]]);
+            };
+
+            // Deselect all items
+            dd.activeShapes.length = 0;
+            
+            // Always reset redos stack and mark drawing as modified when pushing a new undo
+            dd.redos = [];
+            dd.modified = true;
+            dd.undos.push(new DeleteShapeAction(shapes, dd.shapes));
+
+            $('button#redo').attr('disabled', 'disabled');
+            $('button#undo').removeAttr('disabled');
+        });
+
+        $('aside#toolbar button#undo').on('click', function(e) {
+            var action;
+            
+            if (dd.undos.length === 0) {
+                console.log('undo stack is empty');
+                return;
+            }
+
+            // Always deselect all items on undo / redo
+            dd.activeShapes.length = 0;
+
+            action = dd.undos.pop();
+            action.undo(dd.shapes);
+            dd.redos.push(action);
+
+            // Update state of UI. Really need angular for this kind of stuff
+            $('button#redo').removeAttr('disabled');
+            if (!dd.undos.length) {
+                $('button#undo').attr('disabled', 'disabled');
+                dd.modified = false;
+            }
+        });
+
+        $('aside#toolbar button#redo').on('click', function(e) {
+            var action;
+            
+            if (dd.redos.length === 0) {
+                console.log('redo stack is empty');
+                return;
+            }
+
+            // Always deselect all items on undo / redo
+            dd.activeShapes.length = 0;
+            
+            action = dd.redos.pop();
+            action.redo(dd.shapes);
+            dd.undos.push(action);
+            dd.modified = true;
+
+            // Update state of UI. Really need angular for this kind of stuff
+            $('button#undo').removeAttr('disabled');
+            if (!dd.redos.length) {
+                $('button#redo').attr('disabled', 'disabled');
+            }
         });
 
         // Shape attribute inputs that return value via .val()
@@ -177,7 +257,8 @@ $(window).ready(function($) {
 
         // Clicks directly to canvas
         $("canvas#surface").on('mousedown touchstart', function(e) {
-            var clickedShape;
+            var newShape,
+                clickedShape;
 
             start = getEventCoordinates(e);
 
@@ -185,9 +266,22 @@ $(window).ready(function($) {
             if (dd.activeCommand.indexOf('create') === 0) {
 
                 // Add a new Shape, calls a factory function on dd object
-                // Push returns new length of array
+                newShape = dd[dd.activeCommand](start);
+
+                // Adding a shape resets selection
                 dd.activeShapes.length = 0;
-                dd.activeShapes.push(dd.shapes.push(dd[dd.activeCommand](start)) - 1);
+                
+                // Push returns new length of array
+                dd.activeShapes.push(dd.shapes.push(newShape) - 1);
+
+                // And add a new undo action for this, remeber to empty redos
+                dd.redos = [];
+                dd.undos.push(new AddShapeAction(newShape));
+                dd.modified = true;
+
+                $('button#redo').attr('disabled', 'disabled');
+                $('button#undo').removeAttr('disabled');
+
                 dd.dragState = "createShape";
             }
 
@@ -204,6 +298,7 @@ $(window).ready(function($) {
                         dd.activeShapes.push(clickedShape);
                     }
                     dd.dragState = "moveShape";
+                    dd.moveUndo = true;
 
                     // TODO: Update UI with values from selected shape           
                 } else {
@@ -216,6 +311,8 @@ $(window).ready(function($) {
 
         // General drag handler for all movement
         $('section#editor').on('mousemove touchmove', function(e) {
+            var shapes = [];
+
             // No need for action if not actually dragging
             if (dd.dragState === "") {
                 return;
@@ -233,6 +330,24 @@ $(window).ready(function($) {
                     dd.shapes[dd.activeShapes[0]].setEndPoint(current);
                     break;
                 case "moveShape":
+
+                    if (dd.moveUndo) {
+                        // MoveShapeAction needs an array of Shapes
+                        for (var i = dd.activeShapes.length - 1; i >= 0; i--) {
+                            shapes.push(dd.shapes[dd.activeShapes[i]]);
+                        };
+
+                        // Always reset redos stack when pushing a new undo
+                        dd.redos = [];
+                        dd.undos.push(new MoveShapeAction(shapes));
+                        dd.modified = true;
+
+                        $('button#redo').attr('disabled', 'disabled');
+                        $('button#undo').removeAttr('disabled');
+
+                        dd.moveUndo = false;
+                    }
+
                     for (var i = 0; i < dd.activeShapes.length; i++) {
                         dd.shapes[dd.activeShapes[i]].move(current, start);
                     };
