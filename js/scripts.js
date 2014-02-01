@@ -67,8 +67,8 @@ $(window).ready(function($) {
 
         // TODO: Call rendering action to redraw 
     });
-
-    $("input#textInput").focus();
+    //  No need to focus this - here, that is?
+    // $("input#textInput").focus();
 
     // Setup a closure which encapsulates all event handling
     (function() {
@@ -80,11 +80,12 @@ $(window).ready(function($) {
          ** Event handlers for UI inputs
          ******************************************************************/
 
-        $("input#textInput").focus();
+       /* $("input#textInput").focus();
         $("input#textInput").css({'visibility': 'visible'});
         $("input#textInput").on('keydown', function () {
             console.log(jQuery(this).val());
         });
+        */
 
         // Toolbar tool buttons
         $('aside#toolbar button.tool').on('click', function(e) {
@@ -252,6 +253,17 @@ $(window).ready(function($) {
             // Dragging has stopped
             dd.dragState = "";
         });
+        // Handle typing in the textbox
+        $("input#textInput").on('keydown', function (e) {
+            var textBox = dd.shapes[dd.shapes.length - 1];
+             textBox.setText(jQuery(this).val());
+
+
+             // Clear and hide the textbox on pressing enter
+             if(e.keyCode == 13) {
+                document.getElementById("textInput").value="";
+                $("input#textInput").css({'visibility': 'hidden' })}
+            });
 
         /*****************************************************************
          ** Helpers

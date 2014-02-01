@@ -59,14 +59,15 @@
             <input class="input" data-attribute="lineWidth"  id="lineWidth" type="number" size="3" value="1" min="1" max="10" />
 
             <!-- Text attributes -->
-            <label for="font">Letur:</label>
-            <select id="font">
-                <option value="Arial">Arial</option>
-                <option value="Times New Roman">Times</option>
-                <option value="Courier">Courier</option>
+            <label for="fontType">Letur:</label>
+            <select class="input" id="fontType" data-attribute="fontType">
+                <option value="arial">Arial</option>
+                <option value="times">Times</option>
+                <option value="courier">Courier</option>
             </select>
             <label for="fontSize">Stærð:</label>
             <input class="input" data-attribute="fontSize" id="fontSize" type="number" step="4" value="8" min="8" max="36" />
+
 
         </aside>
 
@@ -74,6 +75,9 @@
         <canvas id="surface">
             <h1 class="error">Sorry, your browser sucks!!</h1>
         </canvas>
+
+        <!-- Textbox for entering text -->
+        <input type="text" id="textInput"/>
 
     </section>
 

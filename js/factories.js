@@ -20,8 +20,11 @@ dd.defaultsForShape = function(o) {
   o.foreground = (typeof o.foreground !== "undefined" ? o.foreground : $('input#foreground').val());
   o.background = (typeof o.background !== "undefined" ? o.background : $('input#background').val());
   o.lineWidth = (typeof o.lineWidth !== "undefined" ? o.lineWidth : $('input#lineWidth').val());
-  o.font = (typeof o.font !== "undefined" ? o.font: "arial");
-  o.fontSize = (typeof o.fontSize !== "undefined" ? o.fontSize: 8);
+  o.fontSize = (typeof o.fontSize !== "undefined" ? o.fontSize: $('input#fontSize').val());
+
+  // Failed to use the above method for <select>
+  var ft = document.getElementById('fontType');
+  o.fontType = (typeof o.fontType !== "undefined" ? o.fontType: ft.options[ft.selectedIndex].value);
 
   return o;
 }

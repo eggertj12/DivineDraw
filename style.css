@@ -109,4 +109,6 @@ button#fileLoad {
     display: none;
 }
 
-
+#textInput {
+    visibility: hidden;
+}

@@ -13,14 +13,7 @@ var Dimension = Base.extend({
         this.top = Math.min(this.starty, this.endy);
         this.right = Math.max(this.startx, this.endx);
         this.bottom = Math.max(this.starty, this.endy);
-
-        this.font = o.font;
-        this.fontSize = o.fontSize;
     },
-
-    // This is for text
-    font: "null",
-    fontSize: 0,
 
     // These variables hold the start and end points for the shape
     startx: 0,
@@ -245,27 +238,52 @@ var Line = Shape.extend({
 
 var Text = Shape.extend({
 
+    text: "",
+    font: "",
+    fontS: 0,
+
+
     constructor: function(o) {
         this.base(o);
         this.type = "Text";
+        var temp = o.fontSize;
+        this.fontS = parseInt(temp);
+
+        // Make the string for font
+        var aest = "normal";
+        var space = " ";
+        var fontType = o.font;
+        var result0 = aest.concat(space);
+        var result1 = result0.concat(this.fontS.toString());
+        var result12 = result1.concat("px");
+        var result2 = result12.concat(space);
+        var result3 = result2.concat(o.fontType);
+        this.font = result3;
+
+        $("input#textInput").css({'visibility': 'visible',
+            'position': 'absolute',
+            left: o.x,
+            top: o.y - this.fontS,
+            font: this.font,
+        });
+
+        /*
+        TODO: Autoselect textInput box
+        // focus/select does not seem to work properly
+        $("input#textInput").focus();
+        $("input#textInput").select();
+        // try a stupid workaround
+        var hold = document.getElementById('textInput');
+        hold.select();
+        */
     },
 
     draw: function(ctx) {
-
-        /*Eg var einmitt ad tala um hve ljotur kodinn minn er i
-        samanburdi. Check it!
-        */
-
-        var aest = "bold";
-        var space = " ";
-        var fontType = this.dim.font;
-        var fontSize = this.dim.fontSize;
-        var result = aest.concat(space);
-        var result = result.concat(fontSize);
-        var result = result.concat(space);
-        var result = result.concat(fontType);
-
-        ctx.font = "result";
-        ctx.fillText("Text!", this.dim.startx, this.dim.starty);
+        ctx.font = this.font;
+        ctx.fillText(this.text, this.dim.startx, this.dim.starty);
+    },
+    setText: function(n) {
+        this.text = n;
     }
 })
+
