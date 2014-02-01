@@ -274,7 +274,7 @@ var Text = Shape.extend({
         $("input#textInput").css({'visibility': 'visible',
             'position': 'absolute',
             left: o.x,
-            top: o.y - this.fontS,
+            top: o.y,
             font: this.font,
         });
 
@@ -291,10 +291,13 @@ var Text = Shape.extend({
 
     draw: function(ctx) {
         ctx.font = this.font;
-        ctx.fillText(this.text, this.dim.startx, this.dim.starty);
+        ctx.fillText(this.text, this.dim.startx, this.dim.starty + this.fontS);
     },
     setText: function(n) {
         this.text = n;
+        console.log(this.dim.bottom, this.dim.right);
+        this.dim.bottom = this.dim.top + this.fontS;
+        this.dim.right = this.dim.right + (this.fontS / 2);
     }
 })
 

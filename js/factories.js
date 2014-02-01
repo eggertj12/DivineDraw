@@ -42,6 +42,7 @@ dd.createLine = function(o) {
 }
 
 dd.createText = function(o) {
+  
   return new Text(this.defaultsForShape(o));
 }
 
