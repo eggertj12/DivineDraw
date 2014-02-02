@@ -60,6 +60,17 @@ var Dimension = Base.extend({
     covers: function(x, y) {
         return (x >= this.left && x <= this.right) &&
             (y >= this.top && y <= this.bottom);
+    },
+    
+    // This function checks if Dimension lands inside the rectangle given by x,y, x1,y1
+    contained: function(x, y, x1, y1) {
+        var left = Math.min(x, x1),
+            top = Math.min(y, y1),
+            right = Math.max(x, x1),
+            bottom = Math.max(y, y1);
+
+        return (left <= this.right && right >= this.left) &&
+            (top <= this.bottom && bottom >= this.top);
     }
 });
 

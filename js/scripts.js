@@ -277,6 +277,7 @@ $(window).ready(function($) {
                 } else {
                     dd.activeShapes.length = 0;
 
+                    dd.dragState = "selectShapes";
                     // TODO: allow selection of multiple items by dragging
                 }
             }
@@ -316,6 +317,18 @@ $(window).ready(function($) {
                         dd.shapes[dd.activeShapes[i]].move(current, start);
                     };
                     start = current;
+                    break;
+                case "selectShapes":
+
+                    // Resect selection
+                    dd.activeShapes.length = 0;
+
+                    // Loop shapes adding to selection those in drag rectangle
+                    for (var i = dd.shapes.length - 1; i >= 0; i--) {
+                        if (dd.shapes[i].dim.contained(start.x, start.y, current.x, current.y)) {
+                            dd.activeShapes.push(i);
+                        }
+                    };
                     break;
             }
         
