@@ -110,5 +110,6 @@ button#fileLoad {
 }
 
 #textInput {
-    visibility: hidden;
+    position: absolute;
+    top: -100;
 }

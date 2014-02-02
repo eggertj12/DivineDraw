@@ -1,5 +1,10 @@
-/*globals Base*/
-/*jslint indent: 4 */
+/* DivineDraw Project
+ * Programming assignment 1 for VEFF II Spring 2014 
+ * 
+ * Davíð Arnar Sverrisson
+ * Eggert Jóhannesson
+ */
+
 var Dimension = Base.extend({
 
     // Takes an options object as parameters
@@ -299,54 +304,68 @@ var Line = Shape.extend({
 var Text = Shape.extend({
 
     text: "",
-    font: "",
-    fontS: 0,
+    fontType: "",
+    fontSize: 0,
 
 
     constructor: function(o) {
         this.base(o);
         this.type = "Text";
+
         var temp = o.fontSize;
-        this.fontS = parseInt(temp);
+        this.fontSize = parseInt(o.fontSize);
 
-        // Make the string for font
-        var aest = "normal";
-        var space = " ";
-        var fontType = o.font;
-        var result0 = aest.concat(space);
-        var result1 = result0.concat(this.fontS.toString());
-        var result12 = result1.concat("px");
-        var result2 = result12.concat(space);
-        var result3 = result2.concat(o.fontType);
-        this.font = result3;
 
-        $("input#textInput").css({'visibility': 'visible',
-            'position': 'absolute',
-            left: o.x,
-            top: o.y,
+        this.fontType = o.fontType;
+        this.font = this.fontSize + "px " + o.fontType;
+
+        $("input#textInput").css({
+            left: o.x + 'px',
+            top: o.y + 'px',
+            width: '10px',
             font: this.font,
+            color: this.foreground
         });
 
-        /*
-        TODO: Autoselect textInput box
-        // focus/select does not seem to work properly
+    },
+
+    setEndPoint: function(o) {
+        var width;
+
+        this.base(o);
+
+        width = this.dim.right - this.dim.left;
+        $("input#textInput").css('width', width + 'px');        
         $("input#textInput").focus();
-        $("input#textInput").select();
-        // try a stupid workaround
-        var hold = document.getElementById('textInput');
-        hold.select();
-        */
     },
 
     draw: function(ctx) {
+        this.font = this.fontSize + "px " + this.fontType;
         ctx.font = this.font;
-        ctx.fillText(this.text, this.dim.startx, this.dim.starty + this.fontS);
+        ctx.fillStyle = this.foreground;
+        ctx.fillText(this.text, this.dim.left, this.dim.top + parseInt(this.fontSize));
     },
-    setText: function(n) {
+    setText: function(ctx, n) {
+        var width = ctx.measureText(n).width;
+        this.dim.bottom = this.dim.top + parseInt(this.fontSize);
+        this.dim.right = this.dim.left + width;
+        $("input#textInput").css('width', width + 10 + 'px');
+
         this.text = n;
-        console.log(this.dim.bottom, this.dim.right);
-        this.dim.bottom = this.dim.top + this.fontS;
-        this.dim.right = this.dim.right + (this.fontS / 2);
+    },
+    getAttributes: function() {
+        var attr = this.base();
+        attr.fontSize = this.fontSize;
+        attr.fontType = this.fontType;
+
+        return attr;
+    },
+
+    setAttributes: function(attr) {
+        this.base(attr);
+
+        this.fontSize = attr.fontSize;
+        this.fontType = attr.fontType;
     }
-})
+});
 

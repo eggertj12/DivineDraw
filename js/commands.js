@@ -1,5 +1,9 @@
-/*globals dd*/
-/*jslint indent: 4 */
+/* DivineDraw Project
+ * Programming assignment 1 for VEFF II Spring 2014 
+ * 
+ * Davíð Arnar Sverrisson
+ * Eggert Jóhannesson
+ */
 
 /***********************************************
     Extend dd object with functions for 

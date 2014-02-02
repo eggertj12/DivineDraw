@@ -1,3 +1,10 @@
+/* DivineDraw Project
+ * Programming assignment 1 for VEFF II Spring 2014 
+ * 
+ * Davíð Arnar Sverrisson
+ * Eggert Jóhannesson
+ */
+
 var Action = Base.extend({
 
     // Takes a Shape object or an array of Shapes

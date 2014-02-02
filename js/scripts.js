@@ -1,3 +1,10 @@
+/* DivineDraw Project
+ * Programming assignment 1 for VEFF II Spring 2014 
+ * 
+ * Davíð Arnar Sverrisson
+ * Eggert Jóhannesson
+ */
+
 // Create a global variable to hold application with some state variables and stuff
 var dd = {
     
@@ -91,7 +98,6 @@ $(window).ready(function($) {
             var action;
             
             if (dd.undos.length === 0) {
-                console.log('undo stack is empty');
                 return;
             }
 
@@ -111,7 +117,6 @@ $(window).ready(function($) {
             var action;
             
             if (dd.redos.length === 0) {
-                console.log('redo stack is empty');
                 return;
             }
 
@@ -128,7 +133,7 @@ $(window).ready(function($) {
         });
 
         // Shape attribute inputs that return value via .val()
-        $('aside#toolbar input.input').on('change', function(e) {
+        $('aside#toolbar .input').on('change', function(e) {
 
             // Which attribute is being changed
             var attribute = $(this).attr('data-attribute');
@@ -327,17 +332,35 @@ $(window).ready(function($) {
             // Dragging has stopped
             dd.dragState = "";
         });
+
+
+
         // Handle typing in the textbox
-        $("input#textInput").on('keydown', function (e) {
-            var textBox = dd.shapes[dd.activeShapes[0]];
-             textBox.setText(jQuery(this).val());
+        $("input#textInput").on('keyup', function (e) {
+            var textBox;
+
+            // Clear and hide the textbox on pressing enter
+            if(e.keyCode === 13) {
+                textBox = dd.shapes[dd.activeShapes[0]];
+                textBox.setText(dd.ctx, jQuery(this).val());
+                $("input#textInput").val('').css({'top': '-200px' });
+            }
+
+            // Clear and hide the textbox and delete shape on pressing esc
+            if(e.keyCode === 27) {
+                textBox = dd.shapes[dd.activeShapes[0]];
+                textBox.setText(dd.ctx, jQuery(this).val());
+                $("input#textInput").val('').css({'top': '-200px' });
 
 
-             // Clear and hide the textbox on pressing enter
-             if(e.keyCode == 13) {
-                document.getElementById("textInput").value="";
-                $("input#textInput").css({'visibility': 'hidden' })}
-            });
+                shapes = dd.prepareUndo();
+
+                // Deselect all items
+                dd.activeShapes.length = 0;
+                
+                dd.undos.push(new DeleteShapeAction(shapes, dd.shapes));
+            }
+        });
 
         /*****************************************************************
          ** Helpers
