@@ -62,8 +62,6 @@ var Shape = Base.extend({
 
     // Takes an options object as parameters
     constructor: function(o) {
-        // use timestamp as id
-        this.id = new Date().getTime();
 
         this.dim = new Dimension(o);
         this.solid = (typeof o.solid !== "undefined" ? o.solid : false);
@@ -72,13 +70,12 @@ var Shape = Base.extend({
         this.lineWidth = (typeof o.lineWidth !== "undefined" ? o.lineWidth : "#ff0000");
     },
 
-    id: null,
     type: "Shape",
 
     dim: null,
 
     lineWidth: 1,
-    background: "#000000",
+    foreground: "#000000",
     background: "#ff0000",
     solid: false,
 
@@ -94,6 +91,22 @@ var Shape = Base.extend({
         this.dim.bottom = Math.max(this.dim.starty, this.dim.endy);
     },
 
+    getAttributes: function() {
+        return {
+            lineWidth: this.lineWidth,
+            foreground: this.foreground,
+            background: this.background,
+            solid: this.solid
+        };
+    },
+
+    setAttributes: function(attr) {
+        this.lineWidth = attr.lineWidth;
+        this.foreground = attr.foreground;
+        this.background = attr.background;
+        this.solid = attr.solid;
+    },
+
     move: function(to, from) {
         this.dim.move(to, from);
     },
@@ -106,8 +119,9 @@ var Shape = Base.extend({
     borderCount: 0,
 
     drawBorder: function(ctx) {
-        // Toggle drawing of active border every 5 redraws
-        if (this.borderCount++ > 5) {
+        var offset = this.lineWidth / 2 + 3;
+        // Toggle drawing of active border every 10 redraws
+        if (this.borderCount++ > 10) {
             this.borderColor = (this.borderColor === "#555555" ? "#999999" : "#555555");
             this.borderCount = 0;
         }
@@ -115,7 +129,10 @@ var Shape = Base.extend({
         ctx.strokeStyle = this.borderColor;
         ctx.lineWidth = 0.5;
         ctx.beginPath();
-        ctx.strokeRect(this.dim.left, this.dim.top, this.dim.right - this.dim.left, this.dim.bottom - this.dim.top);
+        ctx.strokeRect(this.dim.left - offset, 
+                       this.dim.top - offset, 
+                       this.dim.right - this.dim.left + 2 * offset, 
+                       this.dim.bottom - this.dim.top + 2 * offset);
         ctx.stroke();
     }
 });
@@ -144,10 +161,8 @@ var Rect = Shape.extend({
 });
 
 var Pen = Shape.extend({
-    // Takes an options object as parameters
     constructor: function(o) {
 
-        // Just pass to super constructor
         this.base(o);
         this.type = "Pen";
         this.points = (typeof o.points !== "undefined" ? o.points : []);
@@ -206,11 +221,16 @@ var Circle = Shape.extend({
     },
 
     draw: function(ctx) {
+        var fracWidth = 0,
+            halfHeight = (this.dim.bottom - this.dim.top) / 2,
+            fracHeight = (this.dim.bottom - this.dim.top) / 6;
 
         ctx.beginPath();
+
         // The arc function and this circle assumes that the inputs for startx + endx == starty + endy
         var radius = ((this.dim.right - this.dim.left) + (this.dim.bottom - this.dim.top)) / 4;
         ctx.arc((this.dim.left+radius), (this.dim.top+radius), radius, 0, 2*Math.PI);
+
         if (this.solid) {
             ctx.fillStyle = this.background;
             ctx.fill();
@@ -218,7 +238,41 @@ var Circle = Shape.extend({
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.foreground;
         ctx.stroke();
+    }
+});
 
+var Ellipse = Shape.extend({
+    //
+    constructor: function(o) {
+        this.base(o);
+        this.type = "Ellipse";
+    },
+
+    draw: function(ctx) {
+        var fracWidth = 0,
+            halfHeight = (this.dim.bottom - this.dim.top) / 2,
+            fracHeight = (this.dim.bottom - this.dim.top) / 6;
+
+        ctx.beginPath();
+
+        // Emulate an ellipse with a bezier curve
+        // My trigonometric math is to rusty to get it perfect
+        ctx.moveTo(this.dim.left, this.dim.top + halfHeight);
+        ctx.bezierCurveTo(this.dim.left + fracWidth, this.dim.top - fracHeight,
+                          this.dim.right - fracWidth, this.dim.top - fracHeight,
+                          this.dim.right, this.dim.top + halfHeight);
+        ctx.bezierCurveTo(this.dim.right - fracWidth, this.dim.bottom + fracHeight,
+                          this.dim.left + fracWidth, this.dim.bottom + fracHeight,
+                          this.dim.left, this.dim.bottom - halfHeight);
+
+
+        if (this.solid) {
+            ctx.fillStyle = this.background;
+            ctx.fill();
+        }
+        ctx.lineWidth = this.lineWidth;
+        ctx.strokeStyle = this.foreground;
+        ctx.stroke();
     }
 });
 
@@ -235,11 +289,6 @@ var Line = Shape.extend({
         ctx.moveTo(this.dim.startx, this.dim.starty);
         ctx.lineTo(this.dim.endx, this.dim.endy);
 
-        // Is this necessary ??
-        if (this.solid) {
-            ctx.fillStyle = this.background;
-            ctx.fill();
-        }
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.foreground;
         ctx.stroke();

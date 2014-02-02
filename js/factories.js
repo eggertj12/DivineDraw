@@ -37,6 +37,10 @@ dd.createCircle = function(o) {
   return new Circle(this.defaultsForShape(o));
 }
 
+dd.createEllipse = function(o) {
+  return new Ellipse(this.defaultsForShape(o));
+}
+
 dd.createLine = function(o) {
   return new Line(this.defaultsForShape(o));
 }

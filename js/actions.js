@@ -12,7 +12,7 @@ var Action = Base.extend({
 
     // The shapes this applies to
     shapes: [],
-    // And their indices in the stack
+    // And their indices in the shape stack
     indices: [],
 
     // Descendants should overwrite this function
@@ -82,6 +82,7 @@ var AddShapeAction = Action.extend({
 var DeleteShapeAction = Action.extend({
     // This action takes care of doing the action not just storing it
     // Therefore needs to take the stack as parameter
+    // TODO: Remove this inconsistency in calling actions
     constructor: function(s, stack) {
         this.base(s);
         this.redo(stack);
@@ -169,6 +170,53 @@ var MoveShapeAction = Action.extend({
         for (var i = this.shapes.length - 1; i >= 0; i--) {
             // Move to the stored nPos
             this.shapes[i].move(this.nPos[i], this.oPos[i]);
+        }
+    }
+
+});
+
+/*******************************************************
+  This action stores old attributes of shape(s)
+  and reapplies on undo
+*******************************************************/
+var AttributeAction = Action.extend({
+    constructor: function(s) {
+        this.base(s);
+
+        this.oAttr = [];
+        this.nAttr = [];
+
+        for (var i = this.shapes.length - 1; i >= 0; i--) {
+            this.oAttr[i] = this.shapes[i].getAttributes();
+        };
+    },
+
+    // Old attributes
+    oAttr: [],
+    // New attributes (on undo)
+    nAttr: [],
+
+    undo: function() {
+
+        // Loop through array of shapes this Action applies to
+        for (var i = this.shapes.length - 1; i >= 0; i--) {
+
+            // Only needed once
+            if (typeof this.nAttr[i] === 'undefined') {
+                // Store current attributes of shape
+                this.nAttr[i] = this.shapes[i].getAttributes();
+            }
+
+            // Move to old original state
+            this.shapes[i].setAttributes(this.oAttr[i]);
+        };
+    },
+
+    redo: function(stack) {
+        // Loop through array of shapes this Action applies to
+        for (var i = this.shapes.length - 1; i >= 0; i--) {
+            // Restore to the stored nAttr
+            this.shapes[i].setAttributes(this.nAttr[i]);
         }
     }
 
